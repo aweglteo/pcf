@@ -8,6 +8,9 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"log"
+	"net"
+	_ "net/http/pprof"
 
 	"github.com/antihax/optional"
 	"github.com/gin-contrib/cors"
@@ -163,6 +166,10 @@ func (pcf *PCF) FilterCli(c *cli.Context) (args []string) {
 
 func (pcf *PCF) Start() {
 	initLog.Infoln("Server started")
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6063", nil))
+	}()
+
 	router := logger_util.NewGinWithLogrus(logger.GinLog)
 
 	bdtpolicy.AddService(router)
